@@ -6,11 +6,12 @@ import (
 	_ "angkringan/docs"
 	"angkringan/pkg/database"
 	"angkringan/pkg/validation"
-	"database/sql"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
+	"github.com/joho/godotenv"
+	"log"
 )
 
 // @title Angkringan API
@@ -24,11 +25,15 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	app := fiber.New()
-	db := database.NewConnect()
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal(err)
+	}
 
 	validatorConf, translatorConf := validation.InitializeValidator()
 	validate := validation.NewValidator(validatorConf, translatorConf)
+
+	app := fiber.New()
+	db := database.NewConnect()
 
 	app.Use(cors.New())
 	app.Use(logger.New(logger.Config{
@@ -70,13 +75,6 @@ func main() {
 	})
 
 	route.NewProductRoute(v1, db, validate)
-
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(db)
 
 	err := app.Listen(":8080")
 	if err != nil {

@@ -3,10 +3,10 @@ package entity
 import "time"
 
 type Product struct {
-	ID          int
-	Name        string
-	Description string
-	Price       float64
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          int       `json:"id,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Price       float64   `json:"price,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

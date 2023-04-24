@@ -2,15 +2,24 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 func NewConnect() *sql.DB {
-	db, err := sql.Open("mysql", os.Getenv("DATASOURCE_URL"))
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USERNAME"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+	)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}

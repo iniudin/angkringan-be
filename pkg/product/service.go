@@ -9,9 +9,9 @@ import (
 type Service interface {
 	Create(ctx context.Context, product request.CreateProduct) (*entity.Product, error)
 	Update(ctx context.Context, product request.UpdateProduct) (*entity.Product, error)
-	Delete(ctx context.Context, id int) error
+	Delete(ctx context.Context, id string) error
 	FindAll(ctx context.Context, pageNumber int, pageSize int) (*[]entity.Product, error)
-	FindById(ctx context.Context, id int) (*entity.Product, error)
+	FindById(ctx context.Context, id string) (*entity.Product, error)
 	FindByName(ctx context.Context, name string) (*entity.Product, error)
 }
 
@@ -40,7 +40,7 @@ func (s *ServiceImpl) Update(ctx context.Context, product request.UpdateProduct)
 	})
 }
 
-func (s *ServiceImpl) Delete(ctx context.Context, id int) error {
+func (s *ServiceImpl) Delete(ctx context.Context, id string) error {
 	return s.repository.Delete(ctx, id)
 }
 
@@ -48,7 +48,7 @@ func (s *ServiceImpl) FindAll(ctx context.Context, pageNumber int, pageSize int)
 	return s.repository.FindAll(ctx, pageNumber, pageSize)
 }
 
-func (s *ServiceImpl) FindById(ctx context.Context, id int) (*entity.Product, error) {
+func (s *ServiceImpl) FindById(ctx context.Context, id string) (*entity.Product, error) {
 	return s.repository.FindById(ctx, id)
 }
 

@@ -3,12 +3,12 @@ package controller
 import (
 	"angkringan/api/model/request"
 	"angkringan/api/model/response"
+	"angkringan/pkg/entity"
 	"angkringan/pkg/product"
 	"angkringan/pkg/validation"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type ProductController interface {
@@ -65,35 +65,23 @@ func (p *ProductControllerImpl) Create(ctx *fiber.Ctx) error {
 }
 
 func (p *ProductControllerImpl) Update(ctx *fiber.Ctx) error {
+	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
 			Status:  "success",
 			Message: "get all product",
-			Data: response.ProductResponse{
-				ID:          1,
-				Name:        "",
-				Description: "",
-				Price:       0,
-				CreatedAt:   time.Time{},
-				UpdatedAt:   time.Time{},
-			},
+			Data:    body,
 		},
 	)
 }
 
 func (p *ProductControllerImpl) Delete(ctx *fiber.Ctx) error {
+	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
 			Status:  "success",
 			Message: "get all product",
-			Data: response.ProductResponse{
-				ID:          1,
-				Name:        "",
-				Description: "",
-				Price:       0,
-				CreatedAt:   time.Time{},
-				UpdatedAt:   time.Time{},
-			},
+			Data:    body,
 		},
 	)
 }
@@ -131,35 +119,23 @@ func (p *ProductControllerImpl) FindAll(ctx *fiber.Ctx) error {
 }
 
 func (p *ProductControllerImpl) FindById(ctx *fiber.Ctx) error {
+	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
 			Status:  "success",
 			Message: "get all product",
-			Data: response.ProductResponse{
-				ID:          1,
-				Name:        "",
-				Description: "",
-				Price:       0,
-				CreatedAt:   time.Time{},
-				UpdatedAt:   time.Time{},
-			},
+			Data:    body,
 		},
 	)
 }
 
 func (p *ProductControllerImpl) FindByName(ctx *fiber.Ctx) error {
+	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
 			Status:  "success",
 			Message: "get all product",
-			Data: response.ProductResponse{
-				ID:          1,
-				Name:        "",
-				Description: "",
-				Price:       0,
-				CreatedAt:   time.Time{},
-				UpdatedAt:   time.Time{},
-			},
+			Data:    body,
 		},
 	)
 }

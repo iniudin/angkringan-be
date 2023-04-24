@@ -4,14 +4,15 @@ import (
 	"angkringan/pkg/entity"
 	"context"
 	"database/sql"
+	"github.com/rs/xid"
 )
 
 type Repository interface {
 	Create(ctx context.Context, product entity.Product) (*entity.Product, error)
 	Update(ctx context.Context, product entity.Product) (*entity.Product, error)
-	Delete(ctx context.Context, id int) error
+	Delete(ctx context.Context, id string) error
 	FindAll(ctx context.Context, pageNumber int, pageSize int) (*[]entity.Product, error)
-	FindById(ctx context.Context, id int) (*entity.Product, error)
+	FindById(ctx context.Context, id string) (*entity.Product, error)
 	FindByName(ctx context.Context, name string) (*entity.Product, error)
 }
 
@@ -25,29 +26,27 @@ func NewRepository(db *sql.DB) *RepositoryImpl {
 
 // Create a Product
 func (r *RepositoryImpl) Create(ctx context.Context, product entity.Product) (*entity.Product, error) {
-	result, err := r.db.ExecContext(
-		ctx,
-		"INSERT INTO product(name, description, price) VALUES (?,?,?)",
-		product.Name, product.Description, product.Price,
-	)
+	guid := xid.New()
+
+	if _, err := r.db.ExecContext(
+		ctx, "INSERT INTO product(id, name, description, price) VALUES (?,?,?,?)",
+		guid.String(), product.Name, product.Description, product.Price,
+	); err != nil {
+		return nil, err
+	}
+
+	newProduct, err := r.FindById(ctx, guid.String())
 	if err != nil {
 		return nil, err
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, err
-	}
-
-	product.ID = int(id)
-	return &product, nil
+	return newProduct, nil
 }
 
 // Update a Product
 func (r *RepositoryImpl) Update(ctx context.Context, product entity.Product) (*entity.Product, error) {
 	_, err := r.db.ExecContext(
-		ctx,
-		"UPDATE product SET name = ?, description = ?, price = ? WHERE id = ?",
+		ctx, "UPDATE product SET name = ?, description = ?, price = ? WHERE id = ?",
 		product.Name, product.Description, product.Price, product.ID,
 	)
 	if err != nil {
@@ -58,7 +57,7 @@ func (r *RepositoryImpl) Update(ctx context.Context, product entity.Product) (*e
 }
 
 // Delete a Product
-func (r *RepositoryImpl) Delete(ctx context.Context, id int) error {
+func (r *RepositoryImpl) Delete(ctx context.Context, id string) error {
 	_, err := r.db.ExecContext(ctx, "DELETE FROM product WHERE id = ?", id)
 	return err
 }
@@ -101,7 +100,7 @@ func (r *RepositoryImpl) FindAll(ctx context.Context, pageNumber int, pageSize i
 }
 
 // FindById find a Product by id
-func (r *RepositoryImpl) FindById(ctx context.Context, id int) (*entity.Product, error) {
+func (r *RepositoryImpl) FindById(ctx context.Context, id string) (*entity.Product, error) {
 	product := entity.Product{}
 	result, err := r.db.QueryContext(
 		ctx,

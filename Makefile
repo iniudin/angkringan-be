@@ -12,6 +12,6 @@ compose-up:
 compose-down:
 	docker compose down
 db-up:
-	migrate -database '$MDSN' -path migrations -verbose up
+	migrate -database '($DSN)' -path migrations -verbose up
 db-down:
-	migrate -database '$MDSN' -path migrations -verbose down
+	migrate -database '($DSN)' -path migrations -verbose down

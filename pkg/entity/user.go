@@ -1,5 +1,11 @@
 package entity
 
+import "time"
+
 type User struct {
-	ID string
+	ID        int
+	Phone     string
+	Password  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

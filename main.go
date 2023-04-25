@@ -6,12 +6,16 @@ import (
 	_ "angkringan/docs"
 	"angkringan/pkg/database"
 	"angkringan/pkg/validation"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 // @title Angkringan API
@@ -45,7 +49,7 @@ func main() {
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
-		URL:         "http://127.0.0.1:8000/doc.json",
+		URL:         "http://127.0.0.1:3000/doc.json",
 		DeepLinking: false,
 		// Expand ("list") or Collapse ("none") tag groups by default
 		DocExpansion: "none",
@@ -75,8 +79,27 @@ func main() {
 
 	route.NewProductRoute(v1, db, validate)
 
-	err := app.Listen(":8080")
-	if err != nil {
-		panic(err)
+	// Listen from a different goroutine
+	go func() {
+		if err := app.Listen(":3000"); err != nil {
+			log.Panic(err)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)                    // Create channel to signify a signal being sent
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM) // When an interrupt or termination signal is sent, notify the channel
+
+	_ = <-c // This blocks the main thread until an interrupt is received
+	fmt.Println("Gracefully shutting down...")
+	_ = app.Shutdown()
+
+	fmt.Println("Running cleanup tasks...")
+
+	// Your cleanup tasks go here
+
+	if err := db.Close(); err != nil {
+		log.Fatal(err)
 	}
+	// redisConn.Close()
+	fmt.Println("Fiber was successful shutdown.")
 }

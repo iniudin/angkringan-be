@@ -72,9 +72,10 @@ func main() {
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1", func(ctx *fiber.Ctx) error {
-		return ctx.JSON(fiber.Map{
+		ctx.JSON(fiber.Map{
 			"message": "🐣 v1",
 		})
+		return ctx.Next()
 	})
 
 	route.NewProductRoute(v1, db, validate)

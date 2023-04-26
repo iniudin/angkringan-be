@@ -29,25 +29,25 @@ func NewProductController(validator *validation.CustomValidator, service product
 	return &ProductControllerImpl{validator: validator, service: service}
 }
 
-func (p *ProductControllerImpl) Create(ctx *fiber.Ctx) error {
+func (c *ProductControllerImpl) Create(ctx *fiber.Ctx) error {
 	body := request.CreateProduct{}
 
 	if err := ctx.BodyParser(&body); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(response.WebResponse{
 			Status:  http.StatusText(http.StatusBadRequest),
 			Message: err.Error(),
-			Data:    nil,
+			Data:    err.Error(),
 		})
 	}
 
-	if err := p.validator.Validate(&body); err != nil {
+	if err := c.validator.Validate(&body); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(response.WebResponse{
 			Status:  http.StatusText(http.StatusBadRequest),
 			Message: "Some field should be provided",
 			Data:    err,
 		})
 	}
-	newProduct, err := p.service.Create(ctx.Context(), body)
+	newProduct, err := c.service.Create(ctx.Context(), body)
 
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(response.WebResponse{
@@ -64,7 +64,7 @@ func (p *ProductControllerImpl) Create(ctx *fiber.Ctx) error {
 	})
 }
 
-func (p *ProductControllerImpl) Update(ctx *fiber.Ctx) error {
+func (c *ProductControllerImpl) Update(ctx *fiber.Ctx) error {
 	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
@@ -75,7 +75,7 @@ func (p *ProductControllerImpl) Update(ctx *fiber.Ctx) error {
 	)
 }
 
-func (p *ProductControllerImpl) Delete(ctx *fiber.Ctx) error {
+func (c *ProductControllerImpl) Delete(ctx *fiber.Ctx) error {
 	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
@@ -95,11 +95,11 @@ func (p *ProductControllerImpl) Delete(ctx *fiber.Ctx) error {
 // @Success 200 {object} response.WebResponse{data=[]response.ProductResponse}
 // @Failure 503 {object} response.WebResponse{}
 // @Router /api/v1/products [get]
-func (p *ProductControllerImpl) FindAll(ctx *fiber.Ctx) error {
+func (c *ProductControllerImpl) FindAll(ctx *fiber.Ctx) error {
 	pageNumber, _ := strconv.Atoi(ctx.Query("page", "1"))
 	pageSize, _ := strconv.Atoi(ctx.Query("size", "10"))
 
-	products, err := p.service.FindAll(ctx.Context(), pageNumber, pageSize)
+	products, err := c.service.FindAll(ctx.Context(), pageNumber, pageSize)
 	if err != nil {
 		return ctx.Status(http.StatusServiceUnavailable).JSON(response.WebResponse{
 			Status:  http.StatusText(http.StatusServiceUnavailable),
@@ -118,7 +118,7 @@ func (p *ProductControllerImpl) FindAll(ctx *fiber.Ctx) error {
 	)
 }
 
-func (p *ProductControllerImpl) FindById(ctx *fiber.Ctx) error {
+func (c *ProductControllerImpl) FindById(ctx *fiber.Ctx) error {
 	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{
@@ -129,7 +129,7 @@ func (p *ProductControllerImpl) FindById(ctx *fiber.Ctx) error {
 	)
 }
 
-func (p *ProductControllerImpl) FindByName(ctx *fiber.Ctx) error {
+func (c *ProductControllerImpl) FindByName(ctx *fiber.Ctx) error {
 	body := entity.Product{}
 	return ctx.JSON(
 		response.WebResponse{

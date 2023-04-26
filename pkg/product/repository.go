@@ -29,7 +29,7 @@ func (r *RepositoryImpl) Create(ctx context.Context, product entity.Product) (*e
 	guid := xid.New()
 
 	if _, err := r.db.ExecContext(
-		ctx, "INSERT INTO product(id, name, description, price) VALUES (?,?,?,?)",
+		ctx, "INSERT INTO product (id, name, description, price) VALUES (?,?,?,?)",
 		guid.String(), product.Name, product.Description, product.Price,
 	); err != nil {
 		return nil, err

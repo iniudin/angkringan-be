@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type Product struct {
-	ID          int
+	ID          string
 	Name        string
 	Description string
 	Price       float64
